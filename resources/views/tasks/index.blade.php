@@ -53,20 +53,36 @@
                     <td>{{ $task->title }}</td>
                     <td>{{ $task->description }}</td>
                     <td>{{ $task->status }}</td>
-                    <td>{{ $task->user->name }}</td>
+                    <td>{{ $task->user->name ?? 'null' }}</td>
                     <td>{{ $task->due_date }}</td>
                     <td>
-                        <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                        <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                        </form>
+                        <div class="d-flex">
+                            <a href="{{ route('tasks.edit', $task->id) }}" class="btn btn-warning btn-sm mr-2">
+                                <i class="fas fa-edit"></i> 
+                            </a>
+                            <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm mr-2">
+                                    <i class="fas fa-trash-alt"></i> 
+                                </button>
+                            </form>
+                            @if($task->status == 'pending')
+                                <a href="{{ route('tasks.showAssignForm', $task->id) }}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-user-plus"></i> 
+                                </a>
+                            @endif
+                        </div>
                     </td>
+                    
                 </tr>
             @endforeach
         </tbody>
     </table>
+    <!-- Pagination Links -->
+<div class="d-flex justify-content-center">
+    {{ $tasks->links('vendor.pagination.bootstrap-4') }}
+</div>
 </div>
 <!-- Chart Container -->
 <div class="my-4">

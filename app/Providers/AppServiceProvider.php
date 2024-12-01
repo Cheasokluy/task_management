@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use App\Models\Task;
 use App\Policies\TaskPolicy;
+use Illuminate\Pagination\Paginator;
 
 class AuthServiceProvider extends ServiceProvider
 {

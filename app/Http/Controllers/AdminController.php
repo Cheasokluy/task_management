@@ -9,17 +9,31 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
-   
+
     public function index()
     {
+        $users = User::all();
         $tasks = Task::all();
-        return view('admin.dashboard', compact('tasks'));
+        $taskCounts = [
+            'pending' => $tasks->where('status', 'pending')->count(),
+            'in-progress' => $tasks->where('status', 'in-progress')->count(),
+            'completed' => $tasks->where('status', 'completed')->count(),
+        ];
+        return view('admin.dashboard', compact('tasks', 'taskCounts', 'users'));
     }
 
-    public function userList()
+    public function userList(Request $request)
     {
-        $users = User::all();
-        return view('admin.users.index', compact('users'));
+        $search = $request->input('search');
+        $sort = $request->input('sort', 'asc'); // Default to ascending order
+    
+        $users = User::when($search, function ($query, $search) {
+            return $query->where('name', 'like', "%{$search}%")
+                         ->orWhere('email', 'like', "%{$search}%")
+                         ->orWhere('role', 'like', "%{$search}%");
+        })->orderBy('name', $sort)->paginate(10); // Adjust the number as needed
+    
+        return view('admin.users.index', compact('users', 'search', 'sort'));
     }
 
     public function create()
@@ -45,6 +59,15 @@ class AdminController extends Controller
         // dd($request->all());
 
         return redirect()->route('admin.userList')->with('success', 'User created successfully.');
+    }
+    public function show($id)
+    {
+        $user = User::with('tasks')->findOrFail($id);
+        $totalTasks = $user->tasks->count();
+        $completedTasks = $user->tasks->where('status', 'completed')->count();
+        $notCompletedTasks = $totalTasks - $completedTasks;
+
+        return view('admin.users.show', compact('user', 'totalTasks', 'completedTasks', 'notCompletedTasks'));
     }
 
     public function edit(User $user)
