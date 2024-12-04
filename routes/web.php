@@ -21,6 +21,7 @@ Route::post('/logout', function () {
 
 Route::patch('/tasks/{id}/update-status', [TaskController::class, 'updateStatus'])->name('tasks.updateStatus');
 Route::patch('/tasks/{id}/update-progress', [TaskController::class, 'updateProgress'])->name('tasks.updateProgress');
+Route::get('/tasks/{task}/show-task-detail', [TaskController::class, 'show'])->name('tasks.show');
 
 // Task CRUD routes
 Route::middleware('auth')->group(function () {

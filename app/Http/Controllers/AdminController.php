@@ -12,6 +12,9 @@ class AdminController extends Controller
 
     public function index()
     {
+        $pendingTasks = Task::where('status', 'pending')->paginate(5, ['*'], 'pendingTasks');
+        $inProgressTasks = Task::where('status', 'in-progress')->paginate(5, ['*'], 'inProgressTasks');
+        $completedTasks = Task::where('status', 'completed')->paginate(5, ['*'], 'completedTasks');
         $users = User::all();
         $tasks = Task::all();
         $taskCounts = [
@@ -19,20 +22,44 @@ class AdminController extends Controller
             'in-progress' => $tasks->where('status', 'in-progress')->count(),
             'completed' => $tasks->where('status', 'completed')->count(),
         ];
-        return view('admin.dashboard', compact('tasks', 'taskCounts', 'users'));
+
+        //prepare data for the line chart
+        $completedTasksOverTime = Task::where('status', 'completed')
+            // ->selectRaw('DATE(completed_at) as date, COUNT(*) as count')
+            // ->groupBy('date')
+            // ->orderBy('date')
+            // ->get();
+            ->selectRaw('DATE_FORMAT(completed_at, "%Y-%m") as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        return view('admin.dashboard', compact(
+            'tasks',
+            'taskCounts',
+            'users',
+            'pendingTasks',
+            'inProgressTasks',
+            'completedTasks',
+            'completedTasksOverTime'
+        ));
     }
 
     public function userList(Request $request)
     {
         $search = $request->input('search');
         $sort = $request->input('sort', 'asc'); // Default to ascending order
-    
-        $users = User::when($search, function ($query, $search) {
-            return $query->where('name', 'like', "%{$search}%")
-                         ->orWhere('email', 'like', "%{$search}%")
-                         ->orWhere('role', 'like', "%{$search}%");
-        })->orderBy('name', $sort)->paginate(10); // Adjust the number as needed
-    
+
+        $users = User::withCount('tasks')
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('role', 'like', "%{$search}%");
+            })
+            ->orderBy('name', $sort)
+            ->paginate(10); // Adjust the number as needed
+        // dd($users->tasks_count);
+
         return view('admin.users.index', compact('users', 'search', 'sort'));
     }
 
@@ -62,12 +89,22 @@ class AdminController extends Controller
     }
     public function show($id)
     {
-        $user = User::with('tasks')->findOrFail($id);
-        $totalTasks = $user->tasks->count();
-        $completedTasks = $user->tasks->where('status', 'completed')->count();
-        $notCompletedTasks = $totalTasks - $completedTasks;
+        $user = User::findOrFail($id);
 
-        return view('admin.users.show', compact('user', 'totalTasks', 'completedTasks', 'notCompletedTasks'));
+        // Paginate not completed and completed tasks
+        $notCompletedTasks = Task::where('user_id', $user->id)
+            ->where('status', '!=', 'completed')
+            ->paginate(5, ['*'], 'notCompletedTasks');
+
+        $completedTasks = Task::where('user_id', $user->id)
+            ->where('status', 'completed')
+            ->paginate(5, ['*'], 'completedTasks');
+
+        $totalTasks = $user->tasks->count();
+        $completedTasksCount = $user->tasks->where('status', 'completed')->count();
+        $notCompletedTasksCount = $totalTasks - $completedTasksCount;
+
+        return view('admin.users.show', compact('user', 'totalTasks', 'completedTasksCount', 'notCompletedTasksCount', 'notCompletedTasks', 'completedTasks'));
     }
 
     public function edit(User $user)

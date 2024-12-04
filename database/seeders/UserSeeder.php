@@ -19,22 +19,12 @@ class UserSeeder extends Seeder
         // DB::table('users')->truncate();
         // DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         
-        //create one admin user 
-        // User::created([
-        //     'name' =>'Admin User',
-        //     'email' => 'admin@example.com',
-        //     'password' => Hash::make('password'), // Secure password
-        //     'role' => 'admin', // Assign the role
-        // ]);
-        // Create 20 regular users using a factory
-        
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        DB::table('users')->truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // User::factory(20)->create([
-        //     'name' => 'Regular User',
-        //     'email' => fake()->unique()->safeEmail(),
-        //     'password' => Hash::make('password'),
-        //     'role' => 'user',
-        // ]);
+        User::factory(5)->create();
 
     }
 }
+//php artisan db:seed --class=UserSeeder

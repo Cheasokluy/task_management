@@ -18,7 +18,7 @@ class TaskSeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
         // Truncate the tasks table
-        Task::truncate();
+        Task::truncate('tasks')->truncate();
 
         // Re-enable foreign key checks
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
@@ -27,3 +27,4 @@ class TaskSeeder extends Seeder
         Task::factory()->count(50)->create();
     }
 }
+//php artisan db:seed --class=TaskSeeder

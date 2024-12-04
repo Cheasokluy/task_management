@@ -11,8 +11,8 @@
             <p><strong>Email:</strong> {{ $user->email }}</p>
             <p><strong>Role:</strong> {{ $user->role }}</p>
             <p><strong>Total Tasks:</strong> {{ $totalTasks }}</p>
-            <p><strong>Completed Tasks:</strong> {{ $completedTasks }}</p>
-            <p><strong>Not Completed Tasks:</strong> {{ $notCompletedTasks }}</p>
+            <p><strong>Completed Tasks:</strong> {{ $completedTasksCount }}</p>
+            <p><strong>Not Completed Tasks:</strong> {{ $notCompletedTasksCount }}</p>
 
             <a href="{{ route('admin.createTaskForuser', $user->id) }}" 
                 class="btn btn-primary">Create Task for {{ $user->name }}
@@ -42,7 +42,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($user->tasks->where('status', '!=', 'completed') as $task)
+                        @foreach($notCompletedTasks as $task)
                             <tr>
                                 <td>{{ $task->title }}</td>
                                 <td>{{ $task->description }}</td>
@@ -58,6 +58,9 @@
                     </tbody>
                 </table>
             @endif
+        </div>
+        <div class="card-footer">
+            {{ $notCompletedTasks->links('../vendor.pagination.bootstrap-4') }}
         </div>
     </div>
 
@@ -79,7 +82,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($user->tasks->where('status', 'completed') as $task)
+                        @foreach($completedTasks as $task)
                             <tr>
                                 <td>{{ $task->title }}</td>
                                 <td>{{ $task->description }}</td>
@@ -90,6 +93,9 @@
                     </tbody>
                 </table>
             @endif
+        </div>
+        <div class="card-footer">
+            {{ $completedTasks->links('../vendor.pagination.bootstrap-4') }}
         </div>
     </div>
 </div>

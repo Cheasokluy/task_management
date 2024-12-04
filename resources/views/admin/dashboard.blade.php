@@ -22,7 +22,7 @@
         {{-- //check if the user is admin --}}
         @if(auth()->user()->role === 'admin')
 
-        <a class="navbar-brand" href="#">Admin Dashboard</a>
+        <a class="navbar-brand" href="{{ route('admin.dashboard')}}">Admin Dashboard</a>
         @else
         <a class="navbar-brand" href="#">User Dashboard</a>
         @endif
@@ -59,11 +59,105 @@
     @hasSection('content')
         @yield('content')
     @else
-        <!-- Chart Container -->
+        {{-- <!-- Chart Container -->
         <div class="my-4 chart-container">
             <canvas id="taskStatusChart"></canvas>
             <!-- Chart Container -->
 
+        </div> --}}
+        <!-- Line Chart Container -->
+    <div class="card mt-4 chart-container">
+        <canvas id="taskStatusChart"></canvas>
+        <div class="card-header">
+            <h3>Tasks Completed Over Time</h3>
+        </div>
+        <div class="card-body">
+            <canvas id="completedTasksChart"></canvas>
+        </div>
+    </div>
+        <div class="container mt-5">
+            <h1 class="my-4">Admin Dashboard</h1>
+        
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-warning text-white">
+                            <h3>Pending Tasks</h3>
+                        </div>
+                        <div class="card-body">
+                            @if($pendingTasks->isEmpty())
+                                <p class="text-muted">No pending tasks.</p>
+                            @else
+                                <ul class="list-group">
+                                    @foreach($pendingTasks as $task)
+                                        <li class="list-group-item">
+                                            <strong>{{ $task->title }}</strong>
+                                            <p>{{ $task->description }}</p>
+                                            <p><strong>Due Date:</strong> {{ $task->due_date }}</p>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+                        <!-- Pagination Links -->
+                        <div class="card-footer">
+                            {{ $pendingTasks->links('vendor.pagination.bootstrap-4') }}
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-info text-white">
+                            <h3>In-Progress Tasks</h3>
+                        </div>
+                        <div class="card-body">
+                            @if($inProgressTasks->isEmpty())
+                                <p class="text-muted">No in-progress tasks.</p>
+                            @else
+                                <ul class="list-group">
+                                    @foreach($inProgressTasks as $task)
+                                        <li class="list-group-item">
+                                            <strong>{{ $task->title }}</strong>
+                                            <p>{{ $task->description }}</p>
+                                            <p><strong>Due Date:</strong> {{ $task->due_date }}</p>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+                        <div class="card-footer">
+                            {{ $inProgressTasks->links('vendor.pagination.bootstrap-4') }}
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h3>Completed Tasks</h3>
+                        </div>
+                        <div class="card-body">
+                            @if($completedTasks->isEmpty())
+                                <p class="text-muted">No completed tasks.</p>
+                            @else
+                                <ul class="list-group">
+                                    @foreach($completedTasks as $task)
+                                        <li class="list-group-item">
+                                            <strong>{{ $task->title }}</strong>
+                                            <p>{{ $task->description }}</p>
+                                            <p><strong>Due Date:</strong> {{ $task->due_date }}</p>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                        </div>
+                        <div class="card-footer">
+                            {{ $completedTasks->links('vendor.pagination.bootstrap-4') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <script>
             document.addEventListener('DOMContentLoaded', function () {
@@ -96,7 +190,32 @@
                         }
                     }
                 });
-            });
+                const lineChat = document.getElementById('completedTasksChart').getContext('2d');
+                const completedTasksChart = new Chart(lineChat, {
+                    type: 'line',
+                    data: {
+                        labels: {!! json_encode($completedTasksOverTime->pluck('month')) !!},
+                        datasets: [{
+                            label: 'Tasks Completed',
+                            data: {!! json_encode($completedTasksOverTime->pluck('count')) !!},
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+                    });
+                    // Debugging: Log the data to the console
+        console.log('Labels:', {!! json_encode($completedTasksOverTime->pluck('month')) !!});
+        console.log('Data:', {!! json_encode($completedTasksOverTime->pluck('count')) !!});
         </script>
         <style>
             .chart-container {

@@ -33,6 +33,7 @@ class TaskController extends Controller
         $users = User::all();
         return view('tasks.create', compact('users'));
     }
+
     public function createTaskFouruser($id)
     {
         $user = User::findOrFail($id);
@@ -146,8 +147,19 @@ class TaskController extends Controller
     {
         $task = Task::findOrFail($id);
         $task->status = $request->input('status');
+        if ($task->status == 'completed') {
+            $task->completed_at = now();
+        } else {
+            $task->completed_at = null;
+        }
         $task->save();
 
         return redirect()->route('user.dashboard')->with('success', 'Task status updated successfully.');
+    }
+
+    //show task details
+    public function show(Task $task)
+    {
+        return view('tasks.show', compact('task'));
     }
 }
