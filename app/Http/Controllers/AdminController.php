@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LoginActivity;
 use App\Models\Task;
+use App\Models\TaskActivity;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -130,5 +132,20 @@ class AdminController extends Controller
         $user->delete();
 
         return redirect()->route('admin.userList')->with('success', 'User deleted successfully.');
+    }
+
+    //login activity
+    public function loginActivity()
+    {
+        $loginActivities = LoginActivity::with('user')->latest()->paginate(10);
+
+        return view('admin.loginActivities', compact('loginActivities'));
+    }
+
+    public function taskActivities()
+    {
+        $taskActivities = TaskActivity::with('task', 'user')->latest()->paginate(10);
+
+        return view('admin.taskActivities', compact('taskActivities'));
     }
 }

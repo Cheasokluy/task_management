@@ -50,6 +50,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/users/{id}', [AdminController::class, 'show'])->name('show');
     Route::get('/users/{id}/create-task', [TaskController::class, 'createTaskForuser'])->name('createTaskForuser');
     Route::post('/tasks/store', [TaskController::class, 'createTaskForUserByAdmin'])->name('tasks.createTaskForUserByAdmin');
+    Route::get('/loginActivities', [AdminController::class, 'loginActivity'])->name('loginActivities');
+    Route::get('/taskActivities', [AdminController::class, 'taskActivities'])->name('taskActivities');
 });
 
 // User dashboard route

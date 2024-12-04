@@ -39,6 +39,12 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('admin.userList') }}">Users</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.loginActivities') }}">LoginActivities</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.taskActivities') }}">LoginActivities</a>
+                </li>
                 @endif
             </ul>
         </div>
