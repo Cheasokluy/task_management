@@ -25,7 +25,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request)
     {
         $request->authenticate();
 
@@ -38,6 +38,7 @@ class AuthenticatedSessionController extends Controller
             'ip_address' => $request->ip(),
             'user_agent' => $request->header('User-Agent')
         ]);
+
 
         $url = "";
         if($request->user()->role ==='admin'){

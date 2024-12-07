@@ -8,6 +8,13 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserDashboardController;
 use App\Http\Middleware\Role;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\API\apiTaskController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
 
  // Home route
 Route::get('/', function () {
@@ -61,10 +68,19 @@ Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(f
 
 
 // Profile routes
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// Route::middleware('auth')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// });
+
+// API routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/api/tasks', [apiTaskController::class, 'index']);
+    Route::post('/api/tasks', [apiTaskController::class, 'store']);
+    Route::get('/api/tasks/{task}', [apiTaskController::class, 'show']);
+    Route::put('/api/tasks/{task}', [apiTaskController::class, 'update']);
+    Route::delete('/api/tasks/{task}', [apiTaskController::class, 'destroy']);
 });
 
 require __DIR__ . '/auth.php';
