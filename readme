@@ -1,0 +1,7 @@
+-to make admin user in terminal: php artisan make:admin
+-to create the dummy data : php artisan seed
+
+** API ** 
+- get all task : GET /api/tasks
+- get a specific tasks : GET /api/tasks/{id} 
+

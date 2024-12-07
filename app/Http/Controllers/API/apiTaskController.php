@@ -19,18 +19,18 @@ class apiTaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-            'status' => 'required|in:pending,in-progress,completed',
-            'user_id' => 'required|exists:users,id',
-            'due_date' => 'nullable|date',
-        ]);
+    // public function store(Request $request)
+    // {
+    //     $request->validate([
+    //         'title' => 'required',
+    //         'description' => 'nullable',
+    //         'status' => 'required|in:pending,in-progress,completed',
+    //         'user_id' => 'required|exists:users,id',
+    //         'due_date' => 'nullable|date',
+    //     ]);
 
-        return Task::create($request->all());
-    }
+    //     return Task::create($request->all());
+    // }
 
     /**
      * Display the specified resource.
@@ -40,31 +40,31 @@ class apiTaskController extends Controller
         return $task;
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Task $task)
-    {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-            'status' => 'required|in:pending,in-progress,completed',
-            'user_id' => 'required|exists:users,id',
-            'due_date' => 'nullable|date',
-        ]);
+    // /**
+    //  * Update the specified resource in storage.
+    //  */
+    // public function update(Request $request, Task $task)
+    // {
+    //     $request->validate([
+    //         'title' => 'required',
+    //         'description' => 'nullable',
+    //         'status' => 'required|in:pending,in-progress,completed',
+    //         'user_id' => 'required|exists:users,id',
+    //         'due_date' => 'nullable|date',
+    //     ]);
 
-        $task->update($request->all());
+    //     $task->update($request->all());
 
-        return $task;
-    }
+    //     return $task;
+    // }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Task $task)
-    {
-        $task->delete();
+    // /**
+    //  * Remove the specified resource from storage.
+    //  */
+    // public function destroy(Task $task)
+    // {
+    //     $task->delete();
 
-        return response()->noContent();
-    }
+    //     return response()->noContent();
+    // }
 }

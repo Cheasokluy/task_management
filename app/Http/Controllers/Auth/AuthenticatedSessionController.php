@@ -25,7 +25,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request)
+    public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
 
@@ -39,6 +39,8 @@ class AuthenticatedSessionController extends Controller
             'user_agent' => $request->header('User-Agent')
         ]);
 
+        // Generate API token 
+        // $token = $request->user()->createToken('API Token')->plainTextToken;
 
         $url = "";
         if($request->user()->role ==='admin'){
